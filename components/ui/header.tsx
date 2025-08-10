@@ -1,8 +1,7 @@
-// components/ui/header.tsx
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import LoginButtons from "@/components/auth/LoginButtons";
+import AuthButtons from "@/components/auth/AuthButtons";
 
 const nav = [
   { href: "/booking", label: "Đặt lịch" },
@@ -34,7 +33,7 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <LoginButtons />
+          <AuthButtons />
         </div>
       </div>
     </header>

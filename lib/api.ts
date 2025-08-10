@@ -4,6 +4,16 @@ export type Product = { id: string; name: string; price: number; image_url?: str
 export type Me = { id: string; name: string; phone_verified: boolean } | null;
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+let MOCK_USERS: Record<string, { password: string; verified: boolean }> = {
+  // Local (VN)
+  "0901234567": { password: "12345678", verified: true },
+  "0987654321": { password: "P@ssw0rd!", verified: true },
+  // E.164 (để login khi chọn +84)
+  "+84901234567": { password: "12345678", verified: true },
+  "+84987654321": { password: "P@ssw0rd!", verified: true },
+  // Dùng để test luồng đăng ký
+  "0911111111": { password: "", verified: false },
+};
 
 export const api = {
   // Replace base URL when backend is ready
@@ -36,5 +46,38 @@ export const api = {
       { id: "p2", name: "Hair Oil Glow", price: 249000 },
       { id: "p3", name: "Nail Care Kit", price: 99000 },
     ];
+  },
+
+  // Phone-only auth (mock)
+  async requestOtp(phone: string) {
+    await delay(300);
+    if (!MOCK_USERS[phone]) MOCK_USERS[phone] = { password: "", verified: false };
+    return { ok: true };
+  },
+
+  async verifyOtp(phone: string, code: string) {
+    await delay(300);
+    if (code !== "123456") throw new Error("Mã OTP không đúng (mã mock: 123456)");
+    if (!MOCK_USERS[phone]) {
+      MOCK_USERS[phone] = { password: "", verified: true };
+    } else {
+      MOCK_USERS[phone].verified = true;
+    }
+    return { ok: true };
+  },
+
+  async register(phone: string, password: string) {
+    await delay(300);
+    const u = MOCK_USERS[phone];
+    if (!u?.verified) throw new Error("Chưa xác thực OTP");
+    MOCK_USERS[phone].password = password;
+    return { ok: true };
+  },
+
+  async login(phone: string, password: string) {
+    await delay(300);
+    const u = MOCK_USERS[phone];
+    if (!u || u.password !== password) throw new Error("Sai số điện thoại hoặc mật khẩu");
+    return { ok: true };
   },
 };
