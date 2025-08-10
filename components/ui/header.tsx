@@ -1,37 +1,40 @@
+// components/ui/header.tsx
 "use client";
-
 import Link from "next/link";
-import Logo from "./logo";
+import { usePathname } from "next/navigation";
+import LoginButtons from "@/components/auth/LoginButtons";
+
+const nav = [
+  { href: "/booking", label: "Đặt lịch" },
+  { href: "/staff", label: "Đội ngũ" },
+  { href: "/products", label: "Sản phẩm" },
+];
 
 export default function Header() {
+  const pathname = usePathname();
   return (
-    <header className="z-30 mt-2 w-full md:mt-5">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="relative flex h-14 items-center justify-between gap-3 rounded-2xl bg-gray-900/90 px-3 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(to_right,var(--color-gray-800),var(--color-gray-700),var(--color-gray-800))_border-box] before:[mask-composite:exclude_!important] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] after:absolute after:inset-0 after:-z-10 after:backdrop-blur-xs">
-          {/* Site branding */}
-          <div className="flex flex-1 items-center">
-            <Logo />
-          </div>
-
-          {/* Desktop sign in links */}
-          <ul className="flex flex-1 items-center justify-end gap-3">
-            <li>
-              <Link
-                href="/signin"
-                className="btn-sm relative bg-linear-to-b from-gray-800 to-gray-800/60 bg-[length:100%_100%] bg-[bottom] py-[5px] text-gray-300 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(to_right,var(--color-gray-800),var(--color-gray-700),var(--color-gray-800))_border-box] before:[mask-composite:exclude_!important] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] hover:bg-[length:100%_150%]"
-              >
-                Sign In
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/signup"
-                className="btn-sm bg-linear-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] py-[5px] text-white shadow-[inset_0px_1px_0px_0px_--theme(--color-white/.16)] hover:bg-[length:100%_150%]"
-              >
-                Register
-              </Link>
-            </li>
-          </ul>
+    <header className="sticky top-0 z-40 backdrop-blur bg-black/30 border-b border-white/5">
+      <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+        <Link href="/" className="inline-flex items-center gap-2">
+          <span className="h-6 w-6 rounded-full bg-indigo-500 inline-block" />
+          <span className="font-semibold">Falcon Salon</span>
+        </Link>
+        <nav className="hidden md:flex items-center gap-6">
+          {nav.map(n => (
+            <Link
+              key={n.href}
+              href={n.href}
+              className={
+                "text-sm/6 hover:text-white transition " +
+                (pathname === n.href ? "text-white" : "text-white/70")
+              }
+            >
+              {n.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="flex items-center gap-3">
+          <LoginButtons />
         </div>
       </div>
     </header>
