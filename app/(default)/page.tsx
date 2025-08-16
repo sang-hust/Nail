@@ -6,8 +6,8 @@ export default function Home() {
       {/* HERO */}
       <section className="px-4">
         <div className="mx-auto max-w-4xl text-center pt-16 pb-24">
-          <h1 className="text-5xl font-semibold mb-4">AI-driven tools for product teams</h1>
-          <p className="text-white/70 mb-8">Our landing page template works on all devices, so you only have to set it up once, and get beautiful results forever.</p>
+          <h1 className="text-5xl font-semibold mb-4">Home screen of HS Salon</h1>
+          <p className="text-white/70 mb-8">Our services works nhuconcac, and get beautiful results forever.</p>
           <div className="flex items-center justify-center gap-3">
             <Link href="/booking" className="rounded-2xl px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 font-semibold shadow-lg">Start Building</Link>
             <Link href="/staff" className="rounded-2xl px-5 py-2.5 border border-white/10 hover:bg-white/10">Schedule Demo</Link>

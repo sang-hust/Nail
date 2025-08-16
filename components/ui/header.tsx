@@ -4,9 +4,9 @@ import { usePathname } from "next/navigation";
 import AuthButtons from "@/components/auth/AuthButtons";
 
 const nav = [
-  { href: "/booking", label: "Đặt lịch" },
-  { href: "/staff", label: "Đội ngũ" },
-  { href: "/products", label: "Sản phẩm" },
+  { href: "/booking", label: "Booking" },
+  { href: "/staff", label: "Staff" },
+  { href: "/products", label: "Product" },
 ];
 
 export default function Header() {
@@ -16,7 +16,7 @@ export default function Header() {
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-2">
           <span className="h-6 w-6 rounded-full bg-indigo-500 inline-block" />
-          <span className="font-semibold">Falcon Salon</span>
+          <span className="font-semibold">HS Salon</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6">
           {nav.map(n => (
