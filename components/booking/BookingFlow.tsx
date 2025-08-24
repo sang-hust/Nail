@@ -5,12 +5,16 @@ import { api, type Staff } from "@/lib/api";
 import DatePicker from "./DatePicker";
 import TimeSlot from "./TimeSlot";
 
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000/api";
+
 export default function BookingFlow() {
   const [date, setDate] = useState<string>(() => new Date().toISOString().slice(0,10));
   const [staff, setStaff] = useState<Staff | null>(null);
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [slots, setSlots] = useState<string[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => { api.listStaff().then(setStaffList); }, []);
 
@@ -20,6 +24,29 @@ export default function BookingFlow() {
   }, [staff, date]);
 
   const canSubmit = useMemo(() => !!(staff && selectedSlot), [staff, selectedSlot]);
+
+  async function handleConfirm() {
+    if (!canSubmit || !staff || !selectedSlot) return;
+    setLoading(true);
+    try {
+      const body = { staffId: staff.id, date, time: selectedSlot };
+      const res = await fetch(`${API_BASE}/appointments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || `HTTP ${res.status}`);
+      }
+      // Thành công: backend đã nhận bản tin để xử lý
+      alert("Yêu cầu đã được gửi. Backend sẽ xử lý.");
+    } catch (err: any) {
+      alert("Lỗi khi gửi yêu cầu: " + (err?.message ?? err));
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="grid lg:grid-cols-2 gap-8">
@@ -67,9 +94,13 @@ export default function BookingFlow() {
               <div className="font-semibold">Tóm tắt</div>
               <div className="text-white/70 text-sm">{date} · {staff? staff.name: "Chưa chọn"} · {selectedSlot || "--:--"}</div>
             </div>
-            <button disabled={!canSubmit} className={`rounded-2xl px-5 py-2.5 text-sm font-semibold shadow-lg ${canSubmit?"bg-indigo-600 hover:bg-indigo-500":"bg-white/10 text-white/50 cursor-not-allowed"}`}
-              onClick={() => alert("Submit sẽ gọi POST /appointments sau này")}
-            >Xác nhận đặt lịch</button>
+            <button
+              disabled={!canSubmit || loading}
+              onClick={handleConfirm}
+              className={`rounded-2xl px-5 py-2.5 text-sm font-semibold shadow-lg ${canSubmit && !loading ? "bg-indigo-600 hover:bg-indigo-500" : "bg-white/10 text-white/50 cursor-not-allowed"}`}
+            >
+              {loading ? "Đang gửi..." : "Xác nhận đặt lịch"}
+            </button>
           </div>
         </section>
       </div>

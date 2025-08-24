@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { StaticImageData } from "next/image";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import Image from "next/image";
@@ -14,6 +14,8 @@ interface ModalVideoProps {
   video: string;
   videoWidth: number;
   videoHeight: number;
+  /** Thuộc tính data-* để button thumbnail có thể bị click từ bên ngoài, ví dụ: "data-salon-video-btn" */
+  dataBtnAttr?: string; // <-- thêm
 }
 
 export default function ModalVideo({
@@ -24,9 +26,20 @@ export default function ModalVideo({
   video,
   videoWidth,
   videoHeight,
+  dataBtnAttr, // <-- nhận prop
 }: ModalVideoProps) {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Tạo object data-* để gắn vào button trigger
+  const dataAttr = dataBtnAttr
+    ? ({ [dataBtnAttr]: "" } as Record<string, string>)
+    : {};
+
+  useEffect(() => {
+    // auto play khi mở (nếu trình duyệt cho phép)
+    if (modalOpen) videoRef.current?.play().catch(() => {});
+  }, [modalOpen]);
 
   return (
     <div className="relative">
@@ -46,10 +59,10 @@ export default function ModalVideo({
 
       {/* Video thumbnail */}
       <button
+        type="button"
+        {...dataAttr} // <-- gắn data-attr vào nút thumbnail
         className="group relative flex items-center justify-center rounded-2xl focus:outline-hidden focus-visible:ring-3 focus-visible:ring-indigo-200"
-        onClick={() => {
-          setModalOpen(true);
-        }}
+        onClick={() => setModalOpen(true)}
         aria-label="Watch the video"
         data-aos="fade-up"
         data-aos-delay={200}
@@ -67,12 +80,7 @@ export default function ModalVideo({
         {/* Play icon */}
         <span className="pointer-events-none absolute p-2.5 before:absolute before:inset-0 before:rounded-full before:bg-gray-950 before:duration-300 group-hover:before:scale-110">
           <span className="relative flex items-center gap-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width={20}
-              height={20}
-              fill="none"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} fill="none">
               <path
                 fill="url(#pla)"
                 fillRule="evenodd"
@@ -80,34 +88,21 @@ export default function ModalVideo({
                 clipRule="evenodd"
               />
               <defs>
-                <linearGradient
-                  id="pla"
-                  x1={10}
-                  x2={10}
-                  y1={0}
-                  y2={20}
-                  gradientUnits="userSpaceOnUse"
-                >
+                <linearGradient id="pla" x1={10} x2={10} y1={0} y2={20} gradientUnits="userSpaceOnUse">
                   <stop stopColor="#6366F1" />
                   <stop offset={1} stopColor="#6366F1" stopOpacity=".72" />
                 </linearGradient>
               </defs>
             </svg>
             <span className="text-sm font-medium leading-tight text-gray-300">
-              Watch Demo
-              <span className="text-gray-600"> - </span>
-              3:47
+              Watch Demo <span className="text-gray-600"> - </span> 3:47
             </span>
           </span>
         </span>
       </button>
       {/* End: Video thumbnail */}
 
-      <Dialog
-        initialFocus={videoRef}
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-      >
+      <Dialog initialFocus={videoRef} open={modalOpen} onClose={() => setModalOpen(false)}>
         <DialogBackdrop
           transition
           className="fixed inset-0 z-99999 bg-black/70 transition-opacity duration-300 ease-out data-closed:opacity-0"
